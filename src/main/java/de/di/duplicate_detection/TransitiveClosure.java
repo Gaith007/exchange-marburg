@@ -28,8 +28,8 @@ public class TransitiveClosure {
 
         boolean[][] matrix = new boolean[numRecords][numRecords];
         for (Duplicate d : duplicates) {
-            matrix[d.getRecordIndex1()][d.getRecordIndex2()] = true;
-            matrix[d.getRecordIndex2()][d.getRecordIndex1()] = true;
+            matrix[d.getIndex1()][d.getIndex2()] = true;
+            matrix[d.getIndex2()][d.getIndex1()] = true;
         }
 
         for (int k = 0; k < numRecords; k++) {
@@ -45,7 +45,7 @@ public class TransitiveClosure {
         for (int i = 0; i < numRecords; i++) {
             for (int j = i + 1; j < numRecords; j++) {
                 if (matrix[i][j]) {
-                    closedDuplicates.add(new Duplicate(relation, i, j));
+                    closedDuplicates.add(new Duplicate(i, j, 1.0, relation));
                 }
             }
         }

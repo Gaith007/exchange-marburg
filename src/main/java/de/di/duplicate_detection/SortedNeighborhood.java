@@ -56,7 +56,7 @@ public class SortedNeighborhood {
                     Record r2 = records[i + j];
                     double sim = recordComparator.compare(r1.getValues(), r2.getValues());
                     if (recordComparator.isDuplicate(sim)) {
-                        duplicates.add(new Duplicate(relation, Math.min(r1.getIndex(), r2.getIndex()), Math.max(r1.getIndex(), r2.getIndex())));
+                        duplicates.add(new Duplicate(Math.min(r1.getIndex(), r2.getIndex()), Math.max(r1.getIndex(), r2.getIndex()), sim, relation));
                     }
                 }
             }
@@ -74,7 +74,7 @@ public class SortedNeighborhood {
         List<AttrSimWeight> attrSimWeights = new ArrayList<>(relation.getAttributes().length);
         double threshold = 0.0;
 
-        Tokenizer tokenizer = new Tokenizer();
+        Tokenizer tokenizer = new Tokenizer(3, false);
         Jaccard jaccard = new Jaccard(tokenizer, false);
         int numAttributes = relation.getAttributes().length;
         double weight = 1.0 / numAttributes;

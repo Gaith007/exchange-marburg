@@ -25,7 +25,7 @@ public class FirstLineSchemaMatcher {
         for (int i = 0; i < sourceColumns.length; i++)
             matrix[i] = new double[targetColumns.length];
 
-        Jaccard jaccard = new Jaccard(new Tokenizer(), false);
+        Jaccard jaccard = new Jaccard(new Tokenizer(3, false), false);
         for (int i = 0; i < sourceColumns.length; i++) {
             for (int j = 0; j < targetColumns.length; j++) {
                 matrix[i][j] = jaccard.calculate(sourceColumns[i], targetColumns[j]);

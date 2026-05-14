@@ -56,12 +56,17 @@ public class LocalitySensitiveHashing implements SimilarityMeasure {
         String[] signature2 = new String[k];
 
         for (int i = 0; i < k; i++) {
-            signature1[i] = String.valueOf(this.minHashFunctions.get(i).calculate(strings1));
-            signature2[i] = String.valueOf(this.minHashFunctions.get(i).calculate(strings2));
+            signature1[i] = String.valueOf(this.minHashFunctions.get(i).hash(strings1));
+            signature2[i] = String.valueOf(this.minHashFunctions.get(i).hash(strings2));
         }
 
-        Jaccard jaccard = new Jaccard(this.tokenizer, true);
-        lshJaccard = jaccard.calculate(signature1, signature2);
+        int intersection = 0;
+        for (int i = 0; i < k; i++) {
+            if (signature1[i].equals(signature2[i])) {
+                intersection++;
+            }
+        }
+        lshJaccard = (double) intersection / k;
 
         return lshJaccard;
     }

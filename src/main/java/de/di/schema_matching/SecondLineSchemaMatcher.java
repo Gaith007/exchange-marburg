@@ -67,7 +67,7 @@ public class SecondLineSchemaMatcher {
             }
         }
         
-        corrMatrix = assignmentArray2correlationMatrix(sourceAssignments, simMatrix);
+        int[][] corrMatrix = assignmentArray2correlationMatrix(sourceAssignments, simMatrix);
 
         return new CorrespondenceMatrix(corrMatrix, similarityMatrix.getSourceRelation(), similarityMatrix.getTargetRelation());
     }
