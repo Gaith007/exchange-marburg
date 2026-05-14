@@ -16,17 +16,58 @@ public class SecondLineSchemaMatcher {
     public CorrespondenceMatrix match(SimilarityMatrix similarityMatrix) {
         double[][] simMatrix = similarityMatrix.getMatrix();
 
-        int[][] corrMatrix = null;
-
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //                                      DATA INTEGRATION ASSIGNMENT                                           //
-        // Translate the similarity matrix into a binary correlation matrix by implementing either the StableMarriage //
-        // algorithm or the Hungarian method.                                                                         //
-
-
-
-        //                                                                                                            //
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        int n = simMatrix.length;
+        if (n == 0) return new CorrespondenceMatrix(new int[0][0], similarityMatrix.getSourceRelation(), similarityMatrix.getTargetRelation());
+        int m = simMatrix[0].length;
+        
+        int[] sourceAssignments = new int[n];
+        Arrays.fill(sourceAssignments, -1);
+        int[] targetAssignments = new int[m];
+        Arrays.fill(targetAssignments, -1);
+        
+        int[][] sourcePrefs = new int[n][m];
+        for (int i = 0; i < n; i++) {
+            Integer[] indices = new Integer[m];
+            for (int j = 0; j < m; j++) indices[j] = j;
+            final int row = i;
+            Arrays.sort(indices, (a, b) -> Double.compare(simMatrix[row][b], simMatrix[row][a]));
+            for (int j = 0; j < m; j++) sourcePrefs[i][j] = indices[j];
+        }
+        
+        int[] nextProposal = new int[n];
+        boolean[] freeSource = new boolean[n];
+        Arrays.fill(freeSource, true);
+        int freeCount = n;
+        
+        while (freeCount > 0) {
+            int s = -1;
+            for (int i = 0; i < n; i++) {
+                if (freeSource[i] && nextProposal[i] < m) {
+                    s = i;
+                    break;
+                }
+            }
+            if (s == -1) break;
+            
+            int t = sourcePrefs[s][nextProposal[s]++];
+            
+            if (targetAssignments[t] == -1) {
+                targetAssignments[t] = s;
+                sourceAssignments[s] = t;
+                freeSource[s] = false;
+                freeCount--;
+            } else {
+                int sPrime = targetAssignments[t];
+                if (simMatrix[s][t] > simMatrix[sPrime][t]) {
+                    targetAssignments[t] = s;
+                    sourceAssignments[s] = t;
+                    freeSource[s] = false;
+                    freeSource[sPrime] = true;
+                }
+            }
+        }
+        
+        corrMatrix = assignmentArray2correlationMatrix(sourceAssignments, simMatrix);
 
         return new CorrespondenceMatrix(corrMatrix, similarityMatrix.getSourceRelation(), similarityMatrix.getTargetRelation());
     }

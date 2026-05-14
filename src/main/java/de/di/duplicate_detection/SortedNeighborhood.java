@@ -44,16 +44,23 @@ public class SortedNeighborhood {
         for (int i = 0; i < relation.getRecords().length; i++)
             records[i] = new Record(i, relation.getRecords()[i]);
 
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //                                      DATA INTEGRATION ASSIGNMENT                                           //
-        // Discover all duplicates in the provided relation. A duplicate stores the attribute indexes that refer to   //
-        // matching records. Use the provided sortingKeys, windowSize, and recordComparator to implement the Sorted   //
-        // Neighborhood Method correctly.                                                                             //
+        for (int sortingKey : sortingKeys) {
+            Arrays.sort(records, Comparator.comparing(r -> {
+                String val = r.getValues()[sortingKey];
+                return val == null ? "" : val;
+            }));
 
-
-
-        //                                                                                                            //
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            for (int i = 0; i < records.length; i++) {
+                for (int j = 1; j < windowSize && i + j < records.length; j++) {
+                    Record r1 = records[i];
+                    Record r2 = records[i + j];
+                    double sim = recordComparator.compare(r1.getValues(), r2.getValues());
+                    if (recordComparator.isDuplicate(sim)) {
+                        duplicates.add(new Duplicate(relation, Math.min(r1.getIndex(), r2.getIndex()), Math.max(r1.getIndex(), r2.getIndex())));
+                    }
+                }
+            }
+        }
 
         return duplicates;
     }
@@ -67,19 +74,14 @@ public class SortedNeighborhood {
         List<AttrSimWeight> attrSimWeights = new ArrayList<>(relation.getAttributes().length);
         double threshold = 0.0;
 
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //                                      DATA INTEGRATION ASSIGNMENT                                           //
-        // Define the AttrSimWeight objects for a RecordComparator that matches the records of the provided relation  //
-        // possibly well, i.e., duplicate should receive possibly high similarity scores and non-duplicates should    //
-        // receive possibly low scores. In other words, put together a possibly effective ensemble of the already     //
-        // implemented similarity functions for duplicate detections runs on the provided relation. Side note: This   //
-        // is usually learned by machine learning algorithms, but a creative, heuristics-based solution is sufficient //
-        // here.                                                                                                      //
-
-
-
-        //                                                                                                            //
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        Tokenizer tokenizer = new Tokenizer();
+        Jaccard jaccard = new Jaccard(tokenizer, false);
+        int numAttributes = relation.getAttributes().length;
+        double weight = 1.0 / numAttributes;
+        for (int i = 0; i < numAttributes; i++) {
+            attrSimWeights.add(new AttrSimWeight(i, jaccard, weight));
+        }
+        threshold = 0.7;
 
         return new RecordComparator(attrSimWeights, threshold);
     }

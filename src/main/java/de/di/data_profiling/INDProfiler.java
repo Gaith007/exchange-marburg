@@ -16,16 +16,24 @@ public class INDProfiler {
     public List<IND> profile(List<Relation> relations, boolean discoverNary) {
         List<IND> inclusionDependencies = new ArrayList<>();
 
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //                                      DATA INTEGRATION ASSIGNMENT                                           //
-        // Discover all inclusion dependencies and return them in inclusion dependencies list. The boolean flag       //
-        // discoverNary indicates, whether only unary or both unary and n-ary INDs should be discovered. To solve     //
-        // this assignment, only unary INDs need to be discovered. Discovering also n-ary INDs is optional.           //
+        for (Relation lhsRel : relations) {
+            String[][] lhsCols = lhsRel.getColumns();
+            List<Set<String>> lhsSets = toColumnSets(lhsCols);
 
+            for (Relation rhsRel : relations) {
+                String[][] rhsCols = rhsRel.getColumns();
+                List<Set<String>> rhsSets = toColumnSets(rhsCols);
 
-
-        //                                                                                                            //
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                for (int i = 0; i < lhsCols.length; i++) {
+                    for (int j = 0; j < rhsCols.length; j++) {
+                        if (lhsRel.equals(rhsRel) && i == j) continue;
+                        if (rhsSets.get(j).containsAll(lhsSets.get(i))) {
+                            inclusionDependencies.add(new IND(lhsRel, i, rhsRel, j));
+                        }
+                    }
+                }
+            }
+        }
 
         if (discoverNary)
             // Here, the lattice search would start if n-ary IND discovery would be supported.

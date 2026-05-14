@@ -34,15 +34,22 @@ public class Levenshtein implements SimilarityMeasure {
             upperLine[i] = i;
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //                                      DATA INTEGRATION ASSIGNMENT                                           //
-        // Use the three provided lines to successively calculate the Levenshtein matrix with the dynamic programming //
-        // algorithm. Depending on whether the inner flag withDamerau is set, the Damerau extension rule should be    //
-        // used during calculation or not. Hint: Implement the Levenshtein algorithm here first, then copy the code   //
-        // to the String tuple function and adjust it a bit to work on the arrays - the algorithm is the same.        //
-
-
-
-        //                                                                                                            //
+        for (int j = 1; j <= string2.length(); j++) {
+            lowerLine[0] = j;
+            for (int i = 1; i <= string1.length(); i++) {
+                int cost = string1.charAt(i - 1) == string2.charAt(j - 1) ? 0 : 1;
+                int min = min(upperLine[i] + 1, lowerLine[i - 1] + 1, upperLine[i - 1] + cost);
+                if (this.withDamerau && i > 1 && j > 1 && string1.charAt(i - 1) == string2.charAt(j - 2) && string1.charAt(i - 2) == string2.charAt(j - 1)) {
+                    min = min(min, upperupperLine[i - 2] + cost);
+                }
+                lowerLine[i] = min;
+            }
+            System.arraycopy(upperLine, 0, upperupperLine, 0, upperLine.length);
+            System.arraycopy(lowerLine, 0, upperLine, 0, lowerLine.length);
+        }
+        int distance = upperLine[string1.length()];
+        int maxLength = Math.max(string1.length(), string2.length());
+        levenshteinSimilarity = maxLength == 0 ? 1.0 : 1.0 - ((double) distance / maxLength);
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         return levenshteinSimilarity;
@@ -70,15 +77,22 @@ public class Levenshtein implements SimilarityMeasure {
             upperLine[i] = i;
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //                                      DATA INTEGRATION ASSIGNMENT                                           //
-        // Use the three provided lines to successively calculate the Levenshtein matrix with the dynamic programming //
-        // algorithm. Depending on whether the inner flag withDamerau is set, the Damerau extension rule should be    //
-        // used during calculation or not. Hint: Implement the Levenshtein algorithm above first, then copy the code  //
-        // to this function and adjust it a bit to work on the arrays - the algorithm is the same.                    //
-
-
-
-        //                                                                                                            //
+        for (int j = 1; j <= strings2.length; j++) {
+            lowerLine[0] = j;
+            for (int i = 1; i <= strings1.length; i++) {
+                int cost = strings1[i - 1].equals(strings2[j - 1]) ? 0 : 1;
+                int min = min(upperLine[i] + 1, lowerLine[i - 1] + 1, upperLine[i - 1] + cost);
+                if (this.withDamerau && i > 1 && j > 1 && strings1[i - 1].equals(strings2[j - 2]) && strings1[i - 2].equals(strings2[j - 1])) {
+                    min = min(min, upperupperLine[i - 2] + cost);
+                }
+                lowerLine[i] = min;
+            }
+            System.arraycopy(upperLine, 0, upperupperLine, 0, upperLine.length);
+            System.arraycopy(lowerLine, 0, upperLine, 0, lowerLine.length);
+        }
+        int distance = upperLine[strings1.length];
+        int maxLength = Math.max(strings1.length, strings2.length);
+        levenshteinSimilarity = maxLength == 0 ? 1.0 : 1.0 - ((double) distance / maxLength);
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         return levenshteinSimilarity;

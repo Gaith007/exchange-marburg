@@ -30,18 +30,37 @@ public class UCCProfiler {
                 currentNonUniques.add(pli);
         }
 
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //                                      DATA INTEGRATION ASSIGNMENT                                           //
-        // Discover all unique column combinations of size n>1 by traversing the lattice level-wise. Make sure to     //
-        // generate only minimal candidates while moving upwards and to prune non-minimal ones. Hint: The class       //
-        // AttributeList offers some helpful functions to test for sub- and superset relationships. Use PLI           //
-        // intersection to validate the candidates in every lattice level. Advances techniques, such as random walks, //
-        // hybrid search strategies, or hitting set reasoning can be used, but are optional to pass the assignment.   //
-
-
-
-        //                                                                                                            //
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        List<PositionListIndex> previousLevel = currentNonUniques;
+        while (!previousLevel.isEmpty()) {
+            List<PositionListIndex> currentLevelNonUniques = new ArrayList<>();
+            for (int i = 0; i < previousLevel.size(); i++) {
+                PositionListIndex pli1 = previousLevel.get(i);
+                for (int j = i + 1; j < previousLevel.size(); j++) {
+                    PositionListIndex pli2 = previousLevel.get(j);
+                    if (pli1.getAttributes().samePrefixAs(pli2.getAttributes())) {
+                        AttributeList candidateAttrs = pli1.getAttributes().union(pli2.getAttributes());
+                        
+                        boolean minimal = true;
+                        for (UCC ucc : uniques) {
+                            if (candidateAttrs.supersetOf(ucc.getAttributeList())) {
+                                minimal = false;
+                                break;
+                            }
+                        }
+                        
+                        if (minimal) {
+                            PositionListIndex intersectedPli = pli1.intersect(pli2);
+                            if (intersectedPli.isUnique()) {
+                                uniques.add(new UCC(relation, candidateAttrs));
+                            } else {
+                                currentLevelNonUniques.add(intersectedPli);
+                            }
+                        }
+                    }
+                }
+            }
+            previousLevel = currentLevelNonUniques;
+        }
 
         return uniques;
     }

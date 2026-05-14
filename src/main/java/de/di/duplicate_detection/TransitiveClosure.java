@@ -26,14 +26,29 @@ public class TransitiveClosure {
         Relation relation = duplicates.iterator().next().getRelation();
         int numRecords = relation.getRecords().length;
 
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //                                      DATA INTEGRATION ASSIGNMENT                                           //
-        // Calculate the transitive closure over the provided attributes using Warshall's (or Warren's) algorithm.    //
+        boolean[][] matrix = new boolean[numRecords][numRecords];
+        for (Duplicate d : duplicates) {
+            matrix[d.getRecordIndex1()][d.getRecordIndex2()] = true;
+            matrix[d.getRecordIndex2()][d.getRecordIndex1()] = true;
+        }
 
+        for (int k = 0; k < numRecords; k++) {
+            for (int i = 0; i < numRecords; i++) {
+                if (matrix[i][k]) {
+                    for (int j = 0; j < numRecords; j++) {
+                        matrix[i][j] = matrix[i][j] || matrix[k][j];
+                    }
+                }
+            }
+        }
 
-
-        //                                                                                                            //
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        for (int i = 0; i < numRecords; i++) {
+            for (int j = i + 1; j < numRecords; j++) {
+                if (matrix[i][j]) {
+                    closedDuplicates.add(new Duplicate(relation, i, j));
+                }
+            }
+        }
 
         return closedDuplicates;
     }

@@ -25,17 +25,12 @@ public class FirstLineSchemaMatcher {
         for (int i = 0; i < sourceColumns.length; i++)
             matrix[i] = new double[targetColumns.length];
 
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //                                      DATA INTEGRATION ASSIGNMENT                                           //
-        // Calculate all pair-wise attribute similarities of the two relations and store the result in a similarity   //
-        // matrix. A naive Jaccard-based implementation will complete the task, but with the already implemented      //
-        // further similarity measures, the data profiling algorithms and a clever matching strategy, much better     //
-        // matching results are possible!                                                                             //
-
-
-
-        //                                                                                                            //
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        Jaccard jaccard = new Jaccard(new Tokenizer(), false);
+        for (int i = 0; i < sourceColumns.length; i++) {
+            for (int j = 0; j < targetColumns.length; j++) {
+                matrix[i][j] = jaccard.calculate(sourceColumns[i], targetColumns[j]);
+            }
+        }
 
         return new SimilarityMatrix(matrix, sourceRelation, targetRelation);
     }

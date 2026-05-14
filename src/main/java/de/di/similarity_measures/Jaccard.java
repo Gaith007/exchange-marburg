@@ -47,15 +47,36 @@ public class Jaccard implements SimilarityMeasure {
         double jaccardSimilarity = 0;
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //                                      DATA INTEGRATION ASSIGNMENT                                           //
-        // Calculate the Jaccard similarity of the two String arrays. Note that the Jaccard similarity needs to be    //
-        // calculated differently depending on the token semantics: set semantics remove duplicates while bag         //
-        // semantics consider them during the calculation. The solution should be able to calculate the Jaccard       //
-        // similarity either of the two semantics by respecting the inner bagSemantics flag.                          //
+        if (this.bagSemantics) {
+            Map<String, Integer> counts1 = new HashMap<>();
+            for (String s : strings1) counts1.put(s, counts1.getOrDefault(s, 0) + 1);
+            Map<String, Integer> counts2 = new HashMap<>();
+            for (String s : strings2) counts2.put(s, counts2.getOrDefault(s, 0) + 1);
 
-
-
-        //                                                                                                            //
+            int intersectionSize = 0;
+            Set<String> allKeys = new HashSet<>(counts1.keySet());
+            allKeys.addAll(counts2.keySet());
+            
+            for (String key : allKeys) {
+                int c1 = counts1.getOrDefault(key, 0);
+                int c2 = counts2.getOrDefault(key, 0);
+                intersectionSize += Math.min(c1, c2);
+            }
+            int totalSize = strings1.length + strings2.length;
+            if (totalSize > 0) {
+                jaccardSimilarity = (double) intersectionSize / totalSize;
+            }
+        } else {
+            Set<String> set1 = new HashSet<>(Arrays.asList(strings1));
+            Set<String> set2 = new HashSet<>(Arrays.asList(strings2));
+            Set<String> intersection = new HashSet<>(set1);
+            intersection.retainAll(set2);
+            Set<String> union = new HashSet<>(set1);
+            union.addAll(set2);
+            if (!union.isEmpty()) {
+                jaccardSimilarity = (double) intersection.size() / union.size();
+            }
+        }
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         return jaccardSimilarity;
