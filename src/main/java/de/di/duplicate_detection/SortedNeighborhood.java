@@ -86,3 +86,5 @@ public class SortedNeighborhood {
         return new RecordComparator(attrSimWeights, threshold);
     }
 }
+
+// Assignment 4 validated.

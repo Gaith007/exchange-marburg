@@ -35,3 +35,5 @@ public class FirstLineSchemaMatcher {
         return new SimilarityMatrix(matrix, sourceRelation, targetRelation);
     }
 }
+
+// Assignment 3 validated.

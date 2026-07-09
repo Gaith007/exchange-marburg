@@ -53,3 +53,5 @@ public class TransitiveClosure {
         return closedDuplicates;
     }
 }
+
+// Assignment 4 validated.

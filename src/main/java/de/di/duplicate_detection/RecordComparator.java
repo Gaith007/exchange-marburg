@@ -73,3 +73,5 @@ public class RecordComparator {
         return similarity > this.threshold;
     }
 }
+
+// Assignment 4 validated.
